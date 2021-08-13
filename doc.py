@@ -6,6 +6,7 @@ from datetime import timedelta
 from docx import Document
 
 
+
 class doc_template:
     def __init__(self, targetpath="C:\\Users\\12580\\Desktop\\quick1.docx",   #这里的path都是双斜杠！！！注意根据自己电脑的路径修改
                  excelpath="C:\\Users\\12580\\Desktop\\模板准备.xlsx",
@@ -89,25 +90,37 @@ class doc_template:
                 if CB_final.iloc[i, 1]>CPMTN_final.iloc[i,1]:
                     transfer_table.loc[i, "行业"] = CB_final.iloc[i, 2]
                     if Publication_date() - timedelta(days=180)>CB_final.iloc[i, 1]:
-                        transfer_table.loc[i,"最后日期"] = CB_final.iloc[i, 1].strftime('%F')[2:]+"*（P）"
+                        if str(transfer_table.loc[i, "行业"]).find("城")!=-1:
+                            transfer_table.loc[i, "最后日期"] = CB_final.iloc[i, 1].strftime('%F')[2:] + "*"
+                        else:
+                            transfer_table.loc[i,"最后日期"] = CB_final.iloc[i, 1].strftime('%F')[2:]+"*（P）"
                     else:
                         transfer_table.loc[i, "最后日期"] = CB_final.iloc[i, 1].strftime('%F')[2:]
                 else:
                     transfer_table.loc[i, "行业"] = CPMTN_final.iloc[i, 2]
                     if Publication_date() - timedelta(days=180)>CPMTN_final.iloc[i, 1]:
-                        transfer_table.loc[i, "最后日期"] = CPMTN_final.iloc[i,1].strftime('%F')[2:]+"*（P）"
+                        if str(transfer_table.loc[i, "行业"]).find("城")!=-1:
+                            transfer_table.loc[i, "最后日期"] = CPMTN_final.iloc[i, 1].strftime('%F')[2:] + "*"
+                        else:
+                            transfer_table.loc[i, "最后日期"] = CPMTN_final.iloc[i,1].strftime('%F')[2:]+"*（P）"
                     else:
                         transfer_table.loc[i, "最后日期"] = CPMTN_final.iloc[i,1].strftime('%F')[2:]
             elif isinstance(CB_final.iloc[i, 1], float) and isinstance(CPMTN_final.iloc[i,1], datetime.datetime):
                 transfer_table.loc[i, "行业"] = CPMTN_final.iloc[i, 2]
                 if Publication_date() - timedelta(days=180)>CPMTN_final.iloc[i, 1]:
-                     transfer_table.loc[i, "最后日期"] = CPMTN_final.iloc[i, 1].strftime('%F')[2:]+"*（P）"
+                     if str(transfer_table.loc[i, "行业"]).find("城")!=-1:
+                         transfer_table.loc[i, "最后日期"] = CPMTN_final.iloc[i, 1].strftime('%F')[2:] + "*"
+                     else:
+                         transfer_table.loc[i, "最后日期"] = CPMTN_final.iloc[i, 1].strftime('%F')[2:]+"*（P）"
                 else:
                      transfer_table.loc[i, "最后日期"] = CPMTN_final.iloc[i, 1].strftime('%F')[2:]
             elif isinstance(CPMTN_final.iloc[i, 1], float) and isinstance(CB_final.iloc[i,1], datetime.datetime):
                 transfer_table.loc[i, "行业"] = CB_final.iloc[i, 2]
                 if Publication_date() - timedelta(days=180)>CB_final.iloc[i, 1]:
-                     transfer_table.loc[i, "最后日期"] = CB_final.iloc[i, 1].strftime('%F')[2:]+"*（P）"
+                     if str(transfer_table.loc[i, "行业"]).find("城")!=-1:
+                         transfer_table.loc[i, "最后日期"] = CB_final.iloc[i, 1].strftime('%F')[2:]+"*"
+                     else:
+                         transfer_table.loc[i, "最后日期"] = CB_final.iloc[i, 1].strftime('%F')[2:] + "*（P）"
                 else:
                     transfer_table.loc[i, "最后日期"] = CB_final.iloc[i, 1].strftime('%F')[2:]
             else:
