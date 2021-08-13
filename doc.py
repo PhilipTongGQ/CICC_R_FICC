@@ -5,15 +5,14 @@ import datetime
 from datetime import timedelta
 from docx import Document
 
+
 class doc_template:
     def __init__(self, targetpath="C:\\Users\\12580\\Desktop\\quick1.docx",   #这里的path都是双斜杠！！！注意根据自己电脑的路径修改
-                 sourcepath="C:\\Users\\12580\\Desktop\\data.docx",
                  excelpath="C:\\Users\\12580\\Desktop\\模板准备.xlsx",
                  issuerpath="C:\\Users\\12580\\Desktop\\CP Issue Index -值格式.xlsx",
                  cover_page_path="C:\\Users\\12580\\Desktop\\封面表准备.xlsx",
                  historypath="C:\\Users\\12580\\Desktop\\00所有覆盖债券首页.xlsx"):
         self.targetpath = targetpath
-        self.sourcepath = sourcepath
         self.excelpath = excelpath
         self.issuerpath = issuerpath
         self.cover_page_path=cover_page_path
@@ -123,11 +122,15 @@ class doc_template:
 
     def get_bond_name(bondnamelist,ind,row,gs_table):
         bondnamelist += [row[x].text for x in range(len(row)) if x != 0]
-        if len(bondnamelist) > 0:
-            global loc
-            loc = np.where(gs_table.债券简称 == bondnamelist[0])[0][0]
+        if bondnamelist[0]!="":
+            try:
+                global loc
+                loc = np.where(gs_table.债券简称 == bondnamelist[0])[0][0]
+            except IndexError:
+                raise IndexError("第%d个表格的债券简称错误，请不要填写模板准备/模板准备CB里不存在的债券。" % (ind))
         else:
-            print("第%d个table名字没抓到" % (ind - 1))          #这行好像没用
+            raise IndexError("第%d个表格的债券简称错误，请不要空着。可以复制一个本期周报其他债券的简称。" % (ind))
+
 
     def get_length(loc,row,gs_table):
         if str(gs_table.iloc[loc, 8]) is not None:    #期限应该只会是str
