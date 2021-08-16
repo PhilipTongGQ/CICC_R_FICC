@@ -160,7 +160,7 @@ class doc_template:
         else:
             row[1].text = str(gs_table.iloc[loc, 7])+"年"
 
-    def get_credit_boost(self,row,loc,gs_table):   #增信措施，起个炫酷的英文名吧
+    def get_credit_boost(self,row,loc,gs_table):   #Collateral/Guarantor增信措施，起个炫酷的英文名吧
         try:
             math.isnan(gs_table.iloc[loc, 27])
             row[1].text = ""
