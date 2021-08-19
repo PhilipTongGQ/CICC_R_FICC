@@ -6,6 +6,7 @@ from datetime import timedelta
 from docx import Document
 
 
+
 class doc_template:
     def __init__(self, targetpath="C:\\Users\\12580\\Desktop\\quick1.docx",   #这里的path都是双斜杠！！！注意根据自己电脑的路径修改
                  excelpath="C:\\Users\\12580\\Desktop\\模板准备.xlsx",
