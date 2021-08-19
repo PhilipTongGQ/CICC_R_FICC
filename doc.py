@@ -6,7 +6,6 @@ from datetime import timedelta
 from docx import Document
 
 
-
 class doc_template:
     def __init__(self, targetpath="C:\\Users\\12580\\Desktop\\quick1.docx",   #这里的path都是双斜杠！！！注意根据自己电脑的路径修改
                  excelpath="C:\\Users\\12580\\Desktop\\模板准备.xlsx",
@@ -129,10 +128,6 @@ class doc_template:
         transfer_table.to_excel(self.cover_page_path, index=False)
         print("Search is over")    #搜完了！
 
-
-        #为了防止返回时间因为漏券错误，同时返回最后一次出现的对应日期
-        #最后查找一遍如果主体名称没有一起报错
-
     def get_bond_name(bondnamelist,ind,row,gs_table):
         bondnamelist += [row[x].text for x in range(len(row)) if x != 0]
         if bondnamelist[0]!="":
@@ -184,18 +179,32 @@ class doc_template:
                 bond_rating = str(gs_table.iloc[loc, 9])
                 row[1].text = rating_agency + "评定为%s" % (bond_rating) + "，" + "主体评级" + issuer_rating
 
-    def get_CICC_ratings(row,loc,gs_table,issuer_column,issuer):
+    def get_CICC_ratings(row,loc,gs_table,issuer_column,issuer,type):
         if len(np.where(issuer_column == doc_template.parentheses(gs_table.iloc[loc, 31]))[0]) == 0:
             row[1].text = "手动查找"
             print("%s的主体全称在issue表未找到" % (gs_table.iloc[loc, 1]))
         else:
+            try:
+                math.isnan(gs_table.iloc[loc, 37])   #有没有担保人？
+                turn_me_on=False
+            except TypeError:
+                name=str(gs_table.iloc[loc, 37])
+                turn_me_on=True
             location = np.where(issuer_column == doc_template.parentheses(gs_table.iloc[loc, 31]))[0][0]
             cicc_rating = issuer.iloc[location, 22]
-            if gs_table.iloc[loc, 8] is not None or not math.isnan(gs_table.iloc[loc, 8]):
-                row[1].text = str(cicc_rating)
+            if "na" in str(issuer.iloc[location, 22]):
+                row[1].text = "被列入名单/首次给予评级"
+                print("请在issue表手动查阅%s发债主体的中金评级，可能被列入名单或者需要首次给予评级"% (gs_table.iloc[loc, 1]))
             else:
-                row[1].text = "可能被列入名单"
-                print("请在issue表手动查阅中金评级，可能被列入名单")
+                if type=="CPMTN" and not turn_me_on:
+                    row[1].text = str(cicc_rating)
+                elif type=="CB" and not turn_me_on:
+                    row[1].text = str(cicc_rating)+"/"+str(cicc_rating)
+                else:
+                    try:
+                        row[1].text = str(cicc_rating) + "/" + str(issuer.iloc[np.where(issuer_column == doc_template.parentheses(name))[0][0], 22])
+                    except IndexError:
+                        row[1].text = str(cicc_rating) + "/" +"手动查找"
 
     def get_industry(gs_table,issuer,issuer_column,row,loc):
         if len(np.where(issuer_column == doc_template.parentheses(gs_table.iloc[loc, 31]))[0]) == 0:
@@ -279,11 +288,11 @@ class doc_template:
                 if index == 11 and type=="CPMTN":
                     row[1].text = gs_table.iloc[loc, 20].strftime('%Y{y}%m{m}%d{d}').format(y='年', m='月', d='日')
                 if index == 12 and type == "CB":  # 中金评级
-                    doc_template.get_CICC_ratings(row,loc,gs_table,issuer_column,issuer)
+                    doc_template.get_CICC_ratings(row,loc,gs_table,issuer_column,issuer,type)
                 if index == 12 and type == "CPMTN":
                     doc_template.get_industry(gs_table,issuer,issuer_column,row,loc)
                 if index == 13 and type == "CPMTN":   #中金评级
-                    doc_template.get_CICC_ratings(row, loc, gs_table, issuer_column, issuer)
+                    doc_template.get_CICC_ratings(row, loc, gs_table, issuer_column, issuer,type)
                 else: continue
             else: continue
         doc.save(self.targetpath)
