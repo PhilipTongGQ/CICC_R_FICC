@@ -170,7 +170,7 @@ class doc_template:
         for key, items in self.name_switch.items():
             rating_agency = rating_agency.replace(key, items)
         if type=="CB":
-            bond_rating = gs_table.iloc[loc, 9]
+            bond_rating = str(gs_table.iloc[loc, 9])
             row[1].text = rating_agency + "，" + issuer_rating + "/" + bond_rating
         if type=="CPMTN":
             try:
