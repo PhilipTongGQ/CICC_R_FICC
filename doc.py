@@ -29,7 +29,7 @@ class doc_template:
         CB_bond_history.iloc[:, 11] = CB_bond_history.iloc[:, 11].fillna(fill)
         CPMTN_anchor=pd.DataFrame([np.where(gs_table.iloc[i, 31] == CPMTN_bond_history.iloc[:, 20])[0] for i in range(len(gs_table))])    #这个dataframe里每一行是每个券在所有覆盖债券短融里对应行的位置
         CPMTN_final=pd.DataFrame(CPMTN_anchor.iloc[i, CPMTN_anchor.iloc[i,:].notna()[::-1].idxmax()] for i in range(len(CPMTN_anchor)))
-        CPMTNarray=np.array(CPMTN_final.iloc[:,0].T).astype(int)     #不知道为啥lambda公式直接在上面dataframe转为int不行，有兴趣可以改改
+        CPMTNarray=np.array(CPMTN_final.iloc[:,0].T).astype(int)     #lambda公式需要axis=1
         for i in range(len(CPMTN_final)):
             if CPMTNarray[i]>=0:
                 if CPMTN_bond_history.iloc[CPMTNarray[i],11] == fill and CPMTN_bond_history.iloc[CPMTNarray[i], 20] == CPMTN_bond_history.iloc[CPMTNarray[i] - 1, 20]:  #同主体相连的两个债（两个品种）导致pandas读取第二个债日期为nan（被改成了str啥都没有），所以直接用上一行的日期
